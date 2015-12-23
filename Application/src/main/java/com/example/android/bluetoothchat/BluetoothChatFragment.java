@@ -52,8 +52,11 @@ public class BluetoothChatFragment extends Fragment {
     private static final String TAG = "BluetoothChatFragment";
 
     // Intent request codes
+    // 发送给Intent的请求值
+
     private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
     private static final int REQUEST_CONNECT_DEVICE_INSECURE = 2;
+    // 请求要使蓝牙可用
     private static final int REQUEST_ENABLE_BT = 3;
 
     // Layout Views
@@ -91,10 +94,13 @@ public class BluetoothChatFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
         // Get local Bluetooth adapter
+        // 获得本地蓝牙适配器
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // If the adapter is null, then Bluetooth is not supported
+        // 不支持蓝牙设备
         if (mBluetoothAdapter == null) {
+            // FragmentActivity 在低版本中使用 Fragment
             FragmentActivity activity = getActivity();
             Toast.makeText(activity, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             activity.finish();
@@ -107,11 +113,17 @@ public class BluetoothChatFragment extends Fragment {
         super.onStart();
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
+        // 判断蓝牙是否可用
         if (!mBluetoothAdapter.isEnabled()) {
+            //如果蓝牙没有打开 请求打开蓝牙
+            // 用于发送启动请求的 Intent
             Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            // 这里会启动系统的一个Activity
+            // 然后也会根据REQUEST_ENABLE_BT在OnActivityResult方法里处理
             startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
             // Otherwise, setup the chat session
         } else if (mChatService == null) {
+            // 可用的情况下初始化界面和一些控件
             setupChat();
         }
     }
@@ -228,6 +240,8 @@ public class BluetoothChatFragment extends Fragment {
      */
     private TextView.OnEditorActionListener mWriteListener
             = new TextView.OnEditorActionListener() {
+        // 实现了软键盘按回车return键发送消息
+        // 一般我们在EditText里按return键是换行
         public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
             // If the action is a key-up event on the return key, send the message
             if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
