@@ -289,7 +289,9 @@ public class BluetoothChatService {
      */
     private class AcceptThread extends Thread {
         // The local server socket
+        // 本地的服务端socket
         private final BluetoothServerSocket mmServerSocket;
+        // 连接类型
         private String mSocketType;
 
         public AcceptThread(boolean secure) {
@@ -297,6 +299,10 @@ public class BluetoothChatService {
             mSocketType = secure ? "Secure" : "Insecure";
 
             // Create a new listening server socket
+            // 创建一个用于监听的服务端socket
+            // NAME参数没关系
+            // MY_UUID是确定唯一通道的标示符
+            // 用于连接的socket也要通过它产生
             try {
                 if (secure) {
                     tmp = mAdapter.listenUsingRfcommWithServiceRecord(NAME_SECURE,
@@ -319,10 +325,13 @@ public class BluetoothChatService {
             BluetoothSocket socket = null;
 
             // Listen to the server socket if we're not connected
+            // 监听到连接上为止
             while (mState != STATE_CONNECTED) {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
+                    // accept 阻塞
+                    // 要不就是成功地建立一个连接  要不就是返回一个异常
                     socket = mmServerSocket.accept();
                 } catch (IOException e) {
                     Log.e(TAG, "Socket Type: " + mSocketType + "accept() failed", e);
@@ -330,18 +339,23 @@ public class BluetoothChatService {
                 }
 
                 // If a connection was accepted
+                // 连接建立成功
                 if (socket != null) {
+                    // 同步块  同一时间  只有一个线程可以访问该区域
                     synchronized (BluetoothChatService.this) {
                         switch (mState) {
                             case STATE_LISTEN:
                             case STATE_CONNECTING:
                                 // Situation normal. Start the connected thread.
+                                // 状态正常  开始进行线程通信
+                                // 实际就是开启通信线程ConnectedThread
                                 connected(socket, socket.getRemoteDevice(),
                                         mSocketType);
                                 break;
                             case STATE_NONE:
                             case STATE_CONNECTED:
                                 // Either not ready or already connected. Terminate new socket.
+                                // 未准备或已连接状态  关闭新建的这个socket.
                                 try {
                                     socket.close();
                                 } catch (IOException e) {
@@ -357,6 +371,7 @@ public class BluetoothChatService {
         }
 
         public void cancel() {
+            //关闭服务端的socket
             Log.d(TAG, "Socket Type" + mSocketType + "cancel " + this);
             try {
                 mmServerSocket.close();
@@ -384,6 +399,7 @@ public class BluetoothChatService {
 
             // Get a BluetoothSocket for a connection with the
             // given BluetoothDevice
+            // 通过远程设备以及唯一的UUID创建一个用于连接的socket
             try {
                 if (secure) {
                     tmp = device.createRfcommSocketToServiceRecord(
@@ -403,35 +419,43 @@ public class BluetoothChatService {
             setName("ConnectThread" + mSocketType);
 
             // Always cancel discovery because it will slow down a connection
+            // 一定要停止扫描 不然会减慢连接速度
             mAdapter.cancelDiscovery();
 
             // Make a connection to the BluetoothSocket
+            // 连接到服务端的socket
             try {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
+                // connect方法也会造成阻塞 直到成功连接 或返回一个异常
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket
+                // 出现异常 关闭socket
                 try {
                     mmSocket.close();
                 } catch (IOException e2) {
                     Log.e(TAG, "unable to close() " + mSocketType +
                             " socket during connection failure", e2);
                 }
+                // 连接失败发送要Toast的消息
                 connectionFailed();
                 return;
             }
 
             // Reset the ConnectThread because we're done
+            // 重置连接线程，因为我们已经完成了
             synchronized (BluetoothChatService.this) {
                 mConnectThread = null;
             }
 
             // Start the connected thread
+            // 开始进行线程通信  开启通信线程ConnectedThread
             connected(mmSocket, mmDevice, mSocketType);
         }
 
         public void cancel() {
+            // 关闭连接用的socket
             try {
                 mmSocket.close();
             } catch (IOException e) {
@@ -451,11 +475,13 @@ public class BluetoothChatService {
 
         public ConnectedThread(BluetoothSocket socket, String socketType) {
             Log.d(TAG, "create ConnectedThread: " + socketType);
+            // 这个是之前的用于连接的socket
             mmSocket = socket;
             InputStream tmpIn = null;
             OutputStream tmpOut = null;
 
             // Get the BluetoothSocket input and output streams
+            // 从连接的socket里获取输入输出流
             try {
                 tmpIn = socket.getInputStream();
                 tmpOut = socket.getOutputStream();
@@ -473,18 +499,23 @@ public class BluetoothChatService {
             int bytes;
 
             // Keep listening to the InputStream while connected
+            // 已经连接上以后持续从通道中监听输入流的情况
             while (true) {
                 try {
                     // Read from the InputStream
+                    // 从通道的输入流InputStream中读取数据到buffer数组中
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
+                    // 将获取到数据的消息发送到UI界面，同时也把内容buffer发过去显示
                     mHandler.obtainMessage(Constants.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+                    // 连接异常断开的时候发送一个需要Toast的消息
                     connectionLost();
                     // Start the service over to restart listening mode
+                    // 重新开始监听模式
                     BluetoothChatService.this.start();
                     break;
                 }
@@ -497,10 +528,14 @@ public class BluetoothChatService {
          * @param buffer The bytes to write
          */
         public void write(byte[] buffer) {
+            // 这个方法用于把发送内容写到通道的OutputStream中
+            // 会在发信息是被调用
             try {
+                // 将buffer内容写进通道
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
+                // 用于将自己发送给对方的内容也在UI界面显示
                 mHandler.obtainMessage(Constants.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
             } catch (IOException e) {
@@ -509,6 +544,7 @@ public class BluetoothChatService {
         }
 
         public void cancel() {
+            // 关闭socket  即关闭通道
             try {
                 mmSocket.close();
             } catch (IOException e) {
