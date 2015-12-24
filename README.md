@@ -1,3 +1,4 @@
+#增加了中文注释
 
 Android BluetoothChat Sample
 ===================================
