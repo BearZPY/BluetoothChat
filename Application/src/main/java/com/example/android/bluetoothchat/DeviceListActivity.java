@@ -52,6 +52,7 @@ public class DeviceListActivity extends Activity {
     /**
      * Return Intent extra
      */
+    // 附加设备地址
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
 
     /**
@@ -69,21 +70,34 @@ public class DeviceListActivity extends Activity {
         super.onCreate(savedInstanceState);
 
         // Setup the window
+        // requestWindowFeature(featureId)
+        // 它的功能是启用窗体的扩展特性。参数是Window类中定义的常量
+        // FEATURE_INDETERMINATE_PROGRESS 不确定的进度
+        // 标题栏右边有个圈旋转
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_device_list);
 
         // Set result CANCELED in case the user backs out
+        // 用于返回数据给上一个Activity
         setResult(Activity.RESULT_CANCELED);
 
         // Initialize the button to perform device discovery
+        // 初始化扫描按键
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
+                // 搜索设备
                 doDiscovery();
+                // 设置按键不可见
+                // 这个View在ViewGroup中不保留位置
+                // 会重新布局
                 v.setVisibility(View.GONE);
             }
         });
 
+        // **************************************
+        // 关联配对和未配对的数组及适配器
+        // **************************************
         // Initialize array adapters. One for already paired devices and
         // one for newly discovered devices
         ArrayAdapter<String> pairedDevicesArrayAdapter =
@@ -100,6 +114,11 @@ public class DeviceListActivity extends Activity {
         newDevicesListView.setAdapter(mNewDevicesArrayAdapter);
         newDevicesListView.setOnItemClickListener(mDeviceClickListener);
 
+        // **************************************
+        // BroadcastReceiver
+        // 传递蓝牙设置参数
+        // **************************************
+
         // Register for broadcasts when a device is discovered
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         this.registerReceiver(mReceiver, filter);
@@ -109,18 +128,25 @@ public class DeviceListActivity extends Activity {
         this.registerReceiver(mReceiver, filter);
 
         // Get the local Bluetooth adapter
+        // 获得本地蓝牙适配器
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Get a set of currently paired devices
+        // 获得已经配对过的设备
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
+            // 如果有配对过的设备
+            // 设置已配对标题可见
             findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
             for (BluetoothDevice device : pairedDevices) {
-                pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                // 添加设备名字和物理地址
+                pairedDevicesArrayAdapter.add(device.getName() + "\n"
+                        + device.getAddress());
             }
         } else {
+            // 如果没有配对的设备 添加一个没有设备的字串
             String noDevices = getResources().getText(R.string.none_paired).toString();
             pairedDevicesArrayAdapter.add(noDevices);
         }
