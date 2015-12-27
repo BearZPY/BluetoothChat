@@ -444,6 +444,7 @@ public class BluetoothChatService {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
                 // connect方法也会造成阻塞 直到成功连接 或返回一个异常
+                // mmSocket.;
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket

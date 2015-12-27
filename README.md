@@ -1,4 +1,6 @@
 #增加了中文注释
+#增加了MCU UUID
+#增加了MCU Chat
 
 Android BluetoothChat Sample
 ===================================
