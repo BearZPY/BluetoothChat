@@ -27,6 +27,11 @@
         android:title="@string/insecure_connect"/>
 
     <item
+        android:id="@+id/mcu_secure_connect_scan"
+        android:showAsAction="never"
+        android:title="@string/mcu_secure_connect"/>
+
+    <item
         android:id="@+id/discoverable"
         android:showAsAction="never"
         android:title="@string/discoverable"/>

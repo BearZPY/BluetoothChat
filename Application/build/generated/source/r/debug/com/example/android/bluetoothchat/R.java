@@ -283,7 +283,7 @@ containing a value of this type.
         public static final int center_vertical=0x7f090007;
         public static final int clip_horizontal=0x7f090008;
         public static final int clip_vertical=0x7f090009;
-        public static final int discoverable=0x7f090020;
+        public static final int discoverable=0x7f090021;
         public static final int edit_text_out=0x7f09001c;
         public static final int end=0x7f09000a;
         public static final int fill=0x7f09000b;
@@ -294,7 +294,8 @@ containing a value of this type.
         public static final int insecure_connect_scan=0x7f09001f;
         public static final int left=0x7f09000e;
         public static final int log_fragment=0x7f090019;
-        public static final int menu_toggle_log=0x7f090021;
+        public static final int mcu_secure_connect_scan=0x7f090020;
+        public static final int menu_toggle_log=0x7f090022;
         public static final int new_devices=0x7f090015;
         public static final int paired_devices=0x7f090013;
         public static final int right=0x7f09000f;
@@ -326,20 +327,21 @@ containing a value of this type.
         public static final int discoverable=0x7f070003;
         public static final int insecure_connect=0x7f070004;
         public static final int intro_message=0x7f070005;
-        public static final int none_found=0x7f070006;
-        public static final int none_paired=0x7f070007;
-        public static final int not_connected=0x7f070008;
-        public static final int sample_hide_log=0x7f070009;
-        public static final int sample_show_log=0x7f07000a;
-        public static final int scanning=0x7f07000b;
-        public static final int secure_connect=0x7f07000c;
-        public static final int select_device=0x7f07000d;
-        public static final int send=0x7f07000e;
-        public static final int title_connected_to=0x7f07000f;
-        public static final int title_connecting=0x7f070010;
-        public static final int title_not_connected=0x7f070011;
-        public static final int title_other_devices=0x7f070012;
-        public static final int title_paired_devices=0x7f070013;
+        public static final int mcu_secure_connect=0x7f070006;
+        public static final int none_found=0x7f070007;
+        public static final int none_paired=0x7f070008;
+        public static final int not_connected=0x7f070009;
+        public static final int sample_hide_log=0x7f07000a;
+        public static final int sample_show_log=0x7f07000b;
+        public static final int scanning=0x7f07000c;
+        public static final int secure_connect=0x7f07000d;
+        public static final int select_device=0x7f07000e;
+        public static final int send=0x7f07000f;
+        public static final int title_connected_to=0x7f070010;
+        public static final int title_connecting=0x7f070011;
+        public static final int title_not_connected=0x7f070012;
+        public static final int title_other_devices=0x7f070013;
+        public static final int title_paired_devices=0x7f070014;
     }
     public static final class style {
         public static final int AppTheme=0x7f050002;

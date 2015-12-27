@@ -52,6 +52,7 @@
     </string>
     <!-- From: file:/home/bear/Desktop/BluetoothChat/Application/src/main/res/values/strings.xml -->
     <eat-comment/>
+    <string name="mcu_secure_connect">Connect a mcu device - Secure</string>
     <string name="none_found">No devices found</string>
     <string name="none_paired">No devices have been paired</string>
     <string name="not_connected">You are not connected to a device</string>
