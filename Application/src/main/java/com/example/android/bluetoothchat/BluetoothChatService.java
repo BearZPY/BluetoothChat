@@ -526,6 +526,17 @@ public class BluetoothChatService {
                 try {
                     // Read from the InputStream
                     // 从通道的输入流InputStream中读取数据到buffer数组中
+
+                    // 利用线程睡眠解决 数据流第一个字符被覆盖的问题
+                    if(!(mmInStream.available() >= 0)){
+                        continue;
+                    }else{
+                       try{
+                            Thread.sleep(20);
+                        }catch (InterruptedException e){
+                            return ;
+                        }
+                    }
                     bytes = mmInStream.read(buffer);
 
                     // Send the obtained bytes to the UI Activity
