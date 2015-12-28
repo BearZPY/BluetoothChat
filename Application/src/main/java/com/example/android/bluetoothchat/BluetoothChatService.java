@@ -294,8 +294,13 @@ public class BluetoothChatService {
         msg.setData(bundle);
         mHandler.sendMessage(msg);
 
+        // BUG：此处加上start 重新开始监听模式
+        // 当目前存在一个连接时 新的连接会被关闭
+        // 导致需要连接两次才能建立新的链接
+        // 在已连接线程中解决该问题
+
         // Start the service over to restart listening mode
-        BluetoothChatService.this.start();
+        // BluetoothChatService.this.start();
     }
 
     /**
@@ -444,7 +449,6 @@ public class BluetoothChatService {
                 // This is a blocking call and will only return on a
                 // successful connection or an exception
                 // connect方法也会造成阻塞 直到成功连接 或返回一个异常
-                // mmSocket.;
                 mmSocket.connect();
             } catch (IOException e) {
                 // Close the socket
@@ -489,6 +493,7 @@ public class BluetoothChatService {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private boolean listenFlag = true;
 
         public ConnectedThread(BluetoothSocket socket, String socketType) {
             Log.d(TAG, "create ConnectedThread: " + socketType);
@@ -531,9 +536,18 @@ public class BluetoothChatService {
                     Log.e(TAG, "disconnected", e);
                     // 连接异常断开的时候发送一个需要Toast的消息
                     connectionLost();
+
+                    // 问题：此处加上start 重新开始监听模式
+                    // 当目前存在一个连接时 新的连接会被关闭
+                    // 导致需要连接两次才能建立新的链接
+                    // 解决 在建立新的连接时不进入监听模式
+
                     // Start the service over to restart listening mode
                     // 重新开始监听模式
-                    BluetoothChatService.this.start();
+
+                    // 判断线程退出时是否进入监听
+                    if(listenFlag)
+                        BluetoothChatService.this.start();
                     break;
                 }
             }
@@ -563,6 +577,8 @@ public class BluetoothChatService {
         public void cancel() {
             // 关闭socket  即关闭通道
             try {
+                // 线程退出时不进入监听
+                listenFlag = false;
                 mmSocket.close();
             } catch (IOException e) {
                 Log.e(TAG, "close() of connect socket failed", e);

@@ -19,7 +19,7 @@
     package="com.example.android.bluetoothchat"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="1"
-    android:versionName="1.0.2">
+    android:versionName="1.0.3">
 
     <!-- Min/target SDK versions (<uses-sdk>) managed by build.gradle -->
     //获取使用蓝牙的权限
