@@ -1,6 +1,10 @@
 #增加了中文注释
 #增加了MCU UUID
 #增加了MCU Chat
+#当使用了 MCU connect 之后 因为UUID已经更改 别的手机APP不能 Secure 连接
+#需要本机在点一次APP connect才可以
+#修复了单片机 发送第一个字符被覆盖的问题
+
 
 Android BluetoothChat Sample
 ===================================
